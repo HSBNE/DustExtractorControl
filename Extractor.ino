@@ -113,12 +113,14 @@ int SM_S_RUNNING() {
 	if (sensor_binfull_debounced.isPressed()) {
 		led_red.Blink(250, 250).Forever();
 		if (TIME_E1 - TIME_0_E1 < RUNTIME_E1_MIN) {
+			led_green.Blink(250, 250).Forever();
 			return RUNDOWN;
 		}
 		return CLEANING;
 	}
 	if (button_stop_debounced.isPressed()) {
 		if (TIME_E1 - TIME_0_E1 < RUNTIME_E1_MIN) {
+			led_green.Blink(250, 250).Forever();
 			return RUNDOWN;
 		}
 		return CLEANING;
@@ -141,12 +143,12 @@ int SM_S_CLEANING() {
 		case CLEAN_START:
 			// Initialised phase, start the timer
 			TIME_0_E1_CLEAN = millis();
-			CLEAN_STATE = CLEAN_SPINDOWN;
 			// Indicate cleaning state
-			led_yellow.On().Update();
 			led_green.Off().Update();
+			led_yellow.Blink(250, 250).Forever();
 			// Turn off extractor
 			digitalWrite(control_extractor, HIGH);
+			CLEAN_STATE = CLEAN_SPINDOWN;
 		break;
 		case CLEAN_SPINDOWN:
 			// Check if we've waited for the extractor to spindown
@@ -154,6 +156,7 @@ int SM_S_CLEANING() {
 				// Reset the timer start
 				TIME_0_E1_CLEAN = millis();
 				// Turn on cleaner
+				led_yellow.On().Update();
 				digitalWrite(control_cleaner, LOW);
 				// Transition state
 				CLEAN_STATE = CLEAN_RUN;
